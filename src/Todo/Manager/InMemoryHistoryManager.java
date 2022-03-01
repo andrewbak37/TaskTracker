@@ -6,19 +6,14 @@ import java.util.*;
 import java.util.function.Function;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static final int RECENT_TASKS_COUNT = 10;
     private final LinkedUniqList<Task, Task> historyList;
 
     InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+    Managers managers = new Managers();
 
     public InMemoryHistoryManager() {
 
-        this.historyList = new LinkedUniqList<>(new Function<Task, Task>() {
-            @Override
-            public Task apply(Task task) {
-                return task;
-            }
-        });
+        this.historyList = new LinkedUniqList<>(task -> task);
     }
 
     private static final class GetTaskIdFunction implements Function<Task, Task> {
@@ -33,7 +28,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public void setInMemoryTaskManager(InMemoryTaskManager inMemoryTaskManager) {
-        this.inMemoryTaskManager = inMemoryTaskManager;
+        managers.getDefault();
+
     }
 
     public List<Task> getRecentTasks() {
@@ -43,9 +39,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         historyList.addFirst(task);
-        if (historyList.size() == RECENT_TASKS_COUNT + 1) {
             historyList.removeLast();
-        }
+
     }
 
     @Override
